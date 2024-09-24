@@ -16,9 +16,16 @@ public class Player : MonoBehaviour
     public float baseSpeed;
     public float maxSpeed;
 
-    bool accelerating = false;
-    public float accelRate;
-    public float deccelRate;
+    bool moving = false;
+    float accelRate;
+    float deccelRate;
+
+    float elapsedTime = 0;
+    float moveTime = 0;
+    float currentTime;
+    public float secondsToMaxAccel;
+    public float secondsToMaxDeccel;
+    float secondsToMax;
 
     public List<int> angles;
     int angleIndex = 0;
@@ -26,11 +33,22 @@ public class Player : MonoBehaviour
 
     private void Start()
     {
-        baseSpeed = speed;
+        speed = baseSpeed;
     }
 
     void Update()
     {
+        // accel deccel logic
+        elapsedTime += Time.deltaTime; //global time
+
+        if (speed > baseSpeed && !moving)
+        {
+            deccelCalc();
+        }
+
+
+
+
         if (Input.GetKeyDown(KeyCode.Space))
         {
             float rad = angles[angleIndex] * Mathf.Deg2Rad;
@@ -49,7 +67,6 @@ public class Player : MonoBehaviour
 
         
 
-
     }
 
     void FixedUpdate()
@@ -58,56 +75,64 @@ public class Player : MonoBehaviour
 
         if (Input.GetKey(KeyCode.LeftArrow) && relativePos.x > 0)
         {
+            moving = true;
             PlayerMovement(Vector3.left);
-            accelerating = true;
-        }
+        } else
         if (Input.GetKey(KeyCode.RightArrow) && relativePos.x < 1)
         {
+            moving = true;
             PlayerMovement(Vector3.right);
-            accelerating = true;
-        }
+        } else
         if (Input.GetKey(KeyCode.UpArrow) && relativePos.y < 1)
         {
+            moving = true;
             PlayerMovement(Vector3.up);
-            accelerating = true;
-        }
+        } else
         if (Input.GetKey(KeyCode.DownArrow) && relativePos.y > 0)
         {
+            moving = true;
             PlayerMovement(Vector3.down);
-            accelerating = true;
-        }
-
-        if (accelerating == false)
-        {
-            accelCalc();
-        }
+        } else moving = false;
     }
 
     void PlayerMovement(Vector3 offset)
     {
-        accelerating = true;
-        accelCalc();
-
-        if (speed >= maxSpeed)
+        if (moveTime < secondsToMax) // if time while moving is less than accel threshold,
         {
-            Debug.Log("slow down");
-            accelerating = false;
+            moveTime += Time.deltaTime; //increment move time
+        }
+        moveTime = Mathf.Clamp(moveTime, 0, secondsToMax);
+        secondsToMax *= Time.deltaTime;
+        
+        if (moving && speed < maxSpeed) // if speed is not yet max speed,
+        {
+            accelRate = ((maxSpeed - speed) / Time.deltaTime);
+            speed += accelRate * Time.deltaTime; //increment speed
         }
 
         transform.position += offset * speed * Time.deltaTime;
     }
 
-    void accelCalc()
+    void deccelCalc()
     {
-        if (accelerating == false && speed >= baseSpeed)
+        // formula for calculating accel is a = (final v - initial v) / time elapsed
+
+        float currentTime = Mathf.Lerp(secondsToMax, 0, Time.deltaTime); //timer
+        Debug.Log($"currentTime reads {currentTime}");
+
+        if (!moving && speed >= baseSpeed) // if speed is greater than base speed and deccelerating
         {
-            speed -= deccelRate * Time.deltaTime;
-        } else if (speed < maxSpeed)
-        {
-            accelerating = true;
-            speed += accelRate * Time.deltaTime;
+            
+            deccelRate = ((baseSpeed - speed) / secondsToMax);
+            speed += deccelRate * Time.deltaTime; //decrement speed
         }
 
-        speed = Mathf.Clamp(speed, baseSpeed, maxSpeed);
+        
+        //Debug.Log($"acceleration is {moving}");
+
+
+
+
+        speed = Mathf.Clamp(speed, baseSpeed, maxSpeed); //clamp the values
     }
 }
