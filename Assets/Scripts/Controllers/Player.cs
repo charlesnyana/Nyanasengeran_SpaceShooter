@@ -12,8 +12,7 @@ public class Player : MonoBehaviour
 
     Vector3 relativePos;
 
-    public float speed;
-    public float baseSpeed;
+    public float currentSpeed = 0; //public just to read
     public float maxSpeed;
 
     bool moving = false;
@@ -21,11 +20,8 @@ public class Player : MonoBehaviour
     float deccelRate;
 
     float elapsedTime = 0;
-    float moveTime = 0;
-    float currentTime;
     public float secondsToMaxAccel;
     public float secondsToMaxDeccel;
-    float secondsToMax;
 
     public List<int> angles;
     int angleIndex = 0;
@@ -33,19 +29,17 @@ public class Player : MonoBehaviour
 
     private void Start()
     {
-        speed = baseSpeed;
+        currentSpeed = 0;
+        accelRate = maxSpeed / secondsToMaxAccel; //a = final speed / seconds^2
+        deccelRate = maxSpeed / secondsToMaxDeccel;
     }
 
     void Update()
     {
         // accel deccel logic
-        elapsedTime += Time.deltaTime; //global time
-
-        if (speed > baseSpeed && !moving)
-        {
-            deccelCalc();
-        }
-
+        
+        //Debug.Log($"globalTime: {elapsedTime}");
+        
 
 
 
@@ -73,6 +67,7 @@ public class Player : MonoBehaviour
     {
         relativePos = Camera.main.WorldToViewportPoint(transform.position); // used to detect screen edges. with help from https://discussions.unity.com/t/how-to-detect-screen-edge-in-unity/459224/3
 
+        // movement logic
         if (Input.GetKey(KeyCode.LeftArrow) && relativePos.x > 0)
         {
             moving = true;
@@ -92,47 +87,34 @@ public class Player : MonoBehaviour
         {
             moving = true;
             PlayerMovement(Vector3.down);
-        } else moving = false;
+        } else
+        {
+            moving = false;
+            PlayerMovement(Vector3.zero);
+        }
+            
+            
     }
 
     void PlayerMovement(Vector3 offset)
     {
-        if (moveTime < secondsToMax) // if time while moving is less than accel threshold,
+        accelRate = maxSpeed / secondsToMaxAccel; //recalculate in case vars changed
+        deccelRate = maxSpeed / secondsToMaxDeccel;
+
+        if (moving && currentSpeed < maxSpeed)
         {
-            moveTime += Time.deltaTime; //increment move time
+            elapsedTime += Time.deltaTime;
+
+            currentSpeed = accelRate * elapsedTime;
         }
-        moveTime = Mathf.Clamp(moveTime, 0, secondsToMax);
-        secondsToMax *= Time.deltaTime;
-        
-        if (moving && speed < maxSpeed) // if speed is not yet max speed,
+        else if (currentSpeed > 0)
         {
-            accelRate = ((maxSpeed - speed) / Time.deltaTime);
-            speed += accelRate * Time.deltaTime; //increment speed
+            currentSpeed -= deccelRate * Time.deltaTime;
         }
+        else if (!moving)
+            elapsedTime = 0;
 
-        transform.position += offset * speed * Time.deltaTime;
-    }
-
-    void deccelCalc()
-    {
-        // formula for calculating accel is a = (final v - initial v) / time elapsed
-
-        float currentTime = Mathf.Lerp(secondsToMax, 0, Time.deltaTime); //timer
-        Debug.Log($"currentTime reads {currentTime}");
-
-        if (!moving && speed >= baseSpeed) // if speed is greater than base speed and deccelerating
-        {
-            
-            deccelRate = ((baseSpeed - speed) / secondsToMax);
-            speed += deccelRate * Time.deltaTime; //decrement speed
-        }
-
-        
-        //Debug.Log($"acceleration is {moving}");
-
-
-
-
-        speed = Mathf.Clamp(speed, baseSpeed, maxSpeed); //clamp the values
+        currentSpeed = Mathf.Clamp(currentSpeed, 0, maxSpeed);
+        transform.position += offset * currentSpeed * Time.deltaTime;
     }
 }
