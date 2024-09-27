@@ -96,7 +96,7 @@ public class Player : MonoBehaviour
             
     }
 
-    void PlayerMovement(Vector3 offset)
+    public void PlayerMovement(Vector3 offset)
     {
         accelRate = maxSpeed / secondsToMaxAccel; //recalculate in case vars changed
         deccelRate = maxSpeed / secondsToMaxDeccel;
@@ -109,6 +109,8 @@ public class Player : MonoBehaviour
         }
         else if (currentSpeed > 0)
         {
+            elapsedTime -= Time.deltaTime;
+
             currentSpeed -= deccelRate * Time.deltaTime;
         }
         else if (!moving)
