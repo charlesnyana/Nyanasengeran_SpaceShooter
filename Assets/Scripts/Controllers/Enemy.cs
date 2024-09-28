@@ -42,7 +42,7 @@ public class Enemy : MonoBehaviour
             yIndex--;
             if (yIndex <= 0) reverse = false;
         }
-        Debug.Log($"yIndex: {yIndex}");
+        //Debug.Log($"yIndex: {yIndex}");
 
 
 
