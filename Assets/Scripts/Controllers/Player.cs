@@ -23,43 +23,43 @@ public class Player : MonoBehaviour
     public float secondsToMaxAccel;
     public float secondsToMaxDeccel;
 
-    public List<int> angles;
-    int angleIndex = 0;
-    Vector3 endPoint;
+    //public List<int> angles;
+    //int angleIndex = 0;
+    //Vector3 endPoint;
+
+    public int circlePoints;
+    Color circleColor = Color.green;
+    public float detectionRadius;
 
     private void Start()
     {
         currentSpeed = 0;
         accelRate = maxSpeed / secondsToMaxAccel; //a = final speed / seconds^2
         deccelRate = maxSpeed / secondsToMaxDeccel;
+
+
     }
 
     void Update()
     {
-        // accel deccel logic
-        
-        //Debug.Log($"globalTime: {elapsedTime}");
-        
+        //if (Input.GetKeyDown(KeyCode.Space))
+        //{
+        //    float rad = angles[angleIndex] * Mathf.Deg2Rad;
 
+        //    float xPos = Mathf.Cos(rad); //x
+        //    float yPos = Mathf.Sin(rad); //y
 
+        //    endPoint = new Vector3(xPos, yPos, 0);
 
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            float rad = angles[angleIndex] * Mathf.Deg2Rad;
+        //    Debug.Log("drawing angle: " + angles[angleIndex] + " with endpoint at: " + endPoint);
 
-            float xPos = Mathf.Cos(rad); //x
-            float yPos = Mathf.Sin(rad); //y
-
-            endPoint = new Vector3(xPos, yPos, 0);
-
-            Debug.Log("drawing angle: " + angles[angleIndex] + " with endpoint at: " + endPoint);
-
-            if (angleIndex == 10) angleIndex = 0;
-            angleIndex++;
-        }
-        Debug.DrawLine(Vector3.zero, endPoint, Color.red);
+        //    if (angleIndex == 10) angleIndex = 0;
+        //    angleIndex++;
+        //}
+        //Debug.DrawLine(Vector3.zero, endPoint, Color.red);
 
         
+
 
     }
 
@@ -92,8 +92,8 @@ public class Player : MonoBehaviour
             moving = false;
             PlayerMovement(Vector3.zero);
         }
-            
-            
+
+        EnemyRadar(detectionRadius, circlePoints);  
     }
 
     public void PlayerMovement(Vector3 offset)
@@ -118,5 +118,43 @@ public class Player : MonoBehaviour
 
         currentSpeed = Mathf.Clamp(currentSpeed, 0, maxSpeed);
         transform.position += offset * currentSpeed * Time.deltaTime;
+    }
+
+    public void EnemyRadar(float radius, int circlePoints)
+    {
+        List<float> circleAngles = new List<float>();
+        Vector3[] circleVertex = new Vector3[circlePoints];
+
+        // calculates for each angle a number of times equal to circlePoints and stores it in circlesAngles list
+        float angleInterval = 360 / circlePoints;
+        for (int i = 0; i < circlePoints; i++)
+        {
+            float angle = i * angleInterval;
+            circleAngles.Add(angle); 
+        }
+
+        for (int i = 0; i < circlePoints; i++)
+        {
+            float rad = circleAngles[i] * Mathf.Deg2Rad;
+
+            float xPos = Mathf.Cos(rad) * radius; //x
+            float yPos = Mathf.Sin(rad) * radius; //y
+
+            // Store the vertex position using the player as its origin
+            circleVertex[i] = new Vector3(xPos, yPos, 0) + transform.position;
+        }
+
+        for (int i = 0; i < circlePoints; i++)
+        {
+            Vector3 startPoint = circleVertex[i];
+            Vector3 endPoint = circleVertex[(i + 1) % circlePoints]; // Wrap around to the first point if over the count
+
+            Debug.DrawLine(startPoint, endPoint, circleColor); 
+        }
+
+        if ((Vector3.Distance(enemyTransform.position, transform.position)) <= radius) 
+        {
+            circleColor = Color.red;
+        } else circleColor = Color.green;
     }
 }
