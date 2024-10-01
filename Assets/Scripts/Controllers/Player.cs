@@ -31,6 +31,10 @@ public class Player : MonoBehaviour
     Color circleColor = Color.green;
     public float detectionRadius;
 
+    public int numberOfPowerups;
+    public float powerupRadius;
+    public GameObject powerUp;
+
     private void Start()
     {
         currentSpeed = 0;
@@ -58,7 +62,10 @@ public class Player : MonoBehaviour
         //}
         //Debug.DrawLine(Vector3.zero, endPoint, Color.red);
 
-        
+        if (Input.GetKeyDown(KeyCode.Space)) // spawn powerups
+        {
+            SpawnPowerups(powerupRadius, numberOfPowerups);
+        }
 
 
     }
@@ -140,14 +147,14 @@ public class Player : MonoBehaviour
             float xPos = Mathf.Cos(rad) * radius; //x
             float yPos = Mathf.Sin(rad) * radius; //y
 
-            // Store the vertex position using the player as its origin
+            // store the vertex position using the player as its origin
             circleVertex[i] = new Vector3(xPos, yPos, 0) + transform.position;
         }
 
         for (int i = 0; i < circlePoints; i++)
         {
             Vector3 startPoint = circleVertex[i];
-            Vector3 endPoint = circleVertex[(i + 1) % circlePoints]; // Wrap around to the first point if over the count
+            Vector3 endPoint = circleVertex[(i + 1) % circlePoints]; // wrap around to the first point if over the count
 
             Debug.DrawLine(startPoint, endPoint, circleColor); 
         }
@@ -156,5 +163,35 @@ public class Player : MonoBehaviour
         {
             circleColor = Color.red;
         } else circleColor = Color.green;
+    }
+
+    public void SpawnPowerups(float radius, int numberOfPowerups)
+    {
+        List<float> powerupAngles = new List<float>(); // copied from previous function in task 1
+        Vector3[] powerupVertex = new Vector3[numberOfPowerups];
+
+
+        float angleInterval = 360 / numberOfPowerups;
+        for (int i = 0; i < numberOfPowerups; i++)
+        {
+            float angle = i * angleInterval;
+            powerupAngles.Add(angle);
+        }
+
+        for (int i = 0; i < numberOfPowerups; i++)
+        {
+            float rad = powerupAngles[i] * Mathf.Deg2Rad;
+
+            float xPos = Mathf.Cos(rad) * radius; //x
+            float yPos = Mathf.Sin(rad) * radius; //y
+
+            powerupVertex[i] = new Vector3(xPos, yPos, 0) + transform.position;
+        }
+
+        foreach (Vector3 point in powerupVertex) 
+        {
+            Instantiate(powerUp, point, Quaternion.identity);
+        }
+
     }
 }
