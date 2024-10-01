@@ -35,7 +35,7 @@ public class Stars : MonoBehaviour
 
     public void DrawConstellation()
     {
-        if (starTransforms.Count > 2) //if there are less than two stars in a List left,
+        if (starTransforms.Count > 2) // if there are more than two stars in List (FIXED. previous comment addressed prior approach, which i've long overwritten)
         {
             drawing = true;
             starA = starTransforms[starIndex];
