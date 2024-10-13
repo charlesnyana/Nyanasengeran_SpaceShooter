@@ -9,6 +9,7 @@ public class Player : MonoBehaviour
     public Transform enemyTransform;
     public GameObject bombPrefab;
     public Transform bombsTransform;
+    public Transform buddyTransform;
 
     Vector3 relativePos;
 
@@ -61,11 +62,6 @@ public class Player : MonoBehaviour
         //    angleIndex++;
         //}
         //Debug.DrawLine(Vector3.zero, endPoint, Color.red);
-
-        if (Input.GetKeyDown(KeyCode.Space)) // spawn powerups
-        {
-            SpawnPowerups(powerupRadius, numberOfPowerups);
-        }
 
 
     }
