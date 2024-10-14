@@ -28,40 +28,19 @@ public class Player : MonoBehaviour
     //int angleIndex = 0;
     //Vector3 endPoint;
 
-    public int circlePoints;
-    Color circleColor = Color.green;
-    public float detectionRadius;
+    //public int circlePoints;
+    //Color circleColor = Color.green;
+    //public float detectionRadius;
 
-    public int numberOfPowerups;
-    public float powerupRadius;
-    public GameObject powerUp;
+    //public int numberOfPowerups;
+    //public float powerupRadius;
+    //public GameObject powerUp;
 
     private void Start()
     {
         currentSpeed = 0;
         accelRate = maxSpeed / secondsToMaxAccel; //a = final speed / seconds^2
         deccelRate = maxSpeed / secondsToMaxDeccel;
-
-
-    }
-
-    void Update()
-    {
-        //if (Input.GetKeyDown(KeyCode.Space))
-        //{
-        //    float rad = angles[angleIndex] * Mathf.Deg2Rad;
-
-        //    float xPos = Mathf.Cos(rad); //x
-        //    float yPos = Mathf.Sin(rad); //y
-
-        //    endPoint = new Vector3(xPos, yPos, 0);
-
-        //    Debug.Log("drawing angle: " + angles[angleIndex] + " with endpoint at: " + endPoint);
-
-        //    if (angleIndex == 10) angleIndex = 0;
-        //    angleIndex++;
-        //}
-        //Debug.DrawLine(Vector3.zero, endPoint, Color.red);
 
 
     }
@@ -96,7 +75,7 @@ public class Player : MonoBehaviour
             PlayerMovement(Vector3.zero);
         }
 
-        EnemyRadar(detectionRadius, circlePoints);  
+        //EnemyRadar(detectionRadius, circlePoints);  
     }
 
     public void PlayerMovement(Vector3 offset)
@@ -123,71 +102,71 @@ public class Player : MonoBehaviour
         transform.position += offset * currentSpeed * Time.deltaTime;
     }
 
-    public void EnemyRadar(float radius, int circlePoints)
-    {
-        List<float> circleAngles = new List<float>();
-        Vector3[] circleVertex = new Vector3[circlePoints];
+    //public void EnemyRadar(float radius, int circlePoints)
+    //{
+    //    List<float> circleAngles = new List<float>();
+    //    Vector3[] circleVertex = new Vector3[circlePoints];
 
-        // calculates for each angle a number of times equal to circlePoints and stores it in circlesAngles list
-        float angleInterval = 360 / circlePoints;
-        for (int i = 0; i < circlePoints; i++)
-        {
-            float angle = i * angleInterval;
-            circleAngles.Add(angle); 
-        }
+    //    // calculates for each angle a number of times equal to circlePoints and stores it in circlesAngles list
+    //    float angleInterval = 360 / circlePoints;
+    //    for (int i = 0; i < circlePoints; i++)
+    //    {
+    //        float angle = i * angleInterval;
+    //        circleAngles.Add(angle); 
+    //    }
 
-        for (int i = 0; i < circlePoints; i++)
-        {
-            float rad = circleAngles[i] * Mathf.Deg2Rad;
+    //    for (int i = 0; i < circlePoints; i++)
+    //    {
+    //        float rad = circleAngles[i] * Mathf.Deg2Rad;
 
-            float xPos = Mathf.Cos(rad) * radius; //x
-            float yPos = Mathf.Sin(rad) * radius; //y
+    //        float xPos = Mathf.Cos(rad) * radius; //x
+    //        float yPos = Mathf.Sin(rad) * radius; //y
 
-            // store the vertex position using the player as its origin
-            circleVertex[i] = new Vector3(xPos, yPos, 0) + transform.position;
-        }
+    //        // store the vertex position using the player as its origin
+    //        circleVertex[i] = new Vector3(xPos, yPos, 0) + transform.position;
+    //    }
 
-        for (int i = 0; i < circlePoints; i++)
-        {
-            Vector3 startPoint = circleVertex[i];
-            Vector3 endPoint = circleVertex[(i + 1) % circlePoints]; // wrap around to the first point if over the count
+    //    for (int i = 0; i < circlePoints; i++)
+    //    {
+    //        Vector3 startPoint = circleVertex[i];
+    //        Vector3 endPoint = circleVertex[(i + 1) % circlePoints]; // wrap around to the first point if over the count
 
-            Debug.DrawLine(startPoint, endPoint, circleColor); 
-        }
+    //        Debug.DrawLine(startPoint, endPoint, circleColor); 
+    //    }
 
-        if ((Vector3.Distance(enemyTransform.position, transform.position)) <= radius) 
-        {
-            circleColor = Color.red;
-        } else circleColor = Color.green;
-    }
+    //    if ((Vector3.Distance(enemyTransform.position, transform.position)) <= radius) 
+    //    {
+    //        circleColor = Color.red;
+    //    } else circleColor = Color.green;
+    //}
 
-    public void SpawnPowerups(float radius, int numberOfPowerups)
-    {
-        List<float> powerupAngles = new List<float>(); // copied from previous function in task 1
-        Vector3[] powerupVertex = new Vector3[numberOfPowerups];
+    //public void SpawnPowerups(float radius, int numberOfPowerups)
+    //{
+    //    List<float> powerupAngles = new List<float>(); // copied from previous function in task 1
+    //    Vector3[] powerupVertex = new Vector3[numberOfPowerups];
 
 
-        float angleInterval = 360 / numberOfPowerups;
-        for (int i = 0; i < numberOfPowerups; i++)
-        {
-            float angle = i * angleInterval;
-            powerupAngles.Add(angle);
-        }
+    //    float angleInterval = 360 / numberOfPowerups;
+    //    for (int i = 0; i < numberOfPowerups; i++)
+    //    {
+    //        float angle = i * angleInterval;
+    //        powerupAngles.Add(angle);
+    //    }
 
-        for (int i = 0; i < numberOfPowerups; i++)
-        {
-            float rad = powerupAngles[i] * Mathf.Deg2Rad;
+    //    for (int i = 0; i < numberOfPowerups; i++)
+    //    {
+    //        float rad = powerupAngles[i] * Mathf.Deg2Rad;
 
-            float xPos = Mathf.Cos(rad) * radius; //x
-            float yPos = Mathf.Sin(rad) * radius; //y
+    //        float xPos = Mathf.Cos(rad) * radius; //x
+    //        float yPos = Mathf.Sin(rad) * radius; //y
 
-            powerupVertex[i] = new Vector3(xPos, yPos, 0) + transform.position;
-        }
+    //        powerupVertex[i] = new Vector3(xPos, yPos, 0) + transform.position;
+    //    }
 
-        foreach (Vector3 point in powerupVertex) 
-        {
-            Instantiate(powerUp, point, Quaternion.identity);
-        }
+    //    foreach (Vector3 point in powerupVertex) 
+    //    {
+    //        Instantiate(powerUp, point, Quaternion.identity);
+    //    }
 
-    }
+    //}
 }

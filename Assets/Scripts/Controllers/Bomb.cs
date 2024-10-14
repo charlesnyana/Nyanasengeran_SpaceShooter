@@ -21,10 +21,21 @@ public class Bomb : MonoBehaviour
     void FixedUpdate()
     {
         BombDrift(driftSpeed);
+
+        DestroyOutOfBounds();
     }
 
     void BombDrift(float speed)
     {
         transform.position += transform.up * speed;
+    }
+
+    void DestroyOutOfBounds()
+    {
+        Vector3 screenPos = Camera.main.WorldToViewportPoint(transform.position);
+        if (screenPos.x < 0 || screenPos.x > 1 || screenPos.y < 0 || screenPos.y > 1)
+        {
+            Destroy(gameObject);
+        }
     }
 }

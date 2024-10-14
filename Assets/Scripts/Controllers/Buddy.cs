@@ -19,6 +19,25 @@ public class Buddy : MonoBehaviour
 
     float currentAngle;
 
+    //made method to calculate vector.
+    Vector3 calcVectorFromAngle(float angle, float radius)
+    {
+        float rad = angle * Mathf.Deg2Rad;
+
+        float xPos = Mathf.Cos(rad) * radius;
+        float yPos = Mathf.Sin(rad) * radius;
+
+        return new Vector3(xPos, yPos);
+    }
+
+    //made method to calculate angle from two points.
+    float calcAngleFromVectors(Vector3 startPos, Vector3 endPos)
+    {
+        Vector3 newVector = endPos - startPos;
+        float angle = Mathf.Atan2(newVector.y, newVector.x) * Mathf.Rad2Deg;
+        return angle;
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -37,7 +56,7 @@ public class Buddy : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        calcAngleFromPlayer();
+        angleFromPlayer = calcAngleFromVectors(transform.position, playerPos.position);
         BuddyMovePath(distance, angularSpeed, playerPos);
     }
 
@@ -48,23 +67,14 @@ public class Buddy : MonoBehaviour
         currentAngle = Mathf.Clamp(currentAngle, 0, 360);
         if (currentAngle >= 360) currentAngle = 0;
 
-        float rad = currentAngle * Mathf.Deg2Rad;
+        Vector3 budPos = calcVectorFromAngle(currentAngle, radius) + playerPos.position;
 
-        float xPos = Mathf.Cos(rad) * radius;
-        float yPos = Mathf.Sin(rad) * radius;
+        //calc forward angle to face the ship there.
+        float budAngle = calcAngleFromVectors(budPos, transform.position);
 
-        Vector3 budPos = new Vector3(xPos, yPos, 0) + playerPos.position;
+        // sets the new position and rotation!!
         transform.position = budPos;
-        budLookAt.position = budPos + (transform.up * lookAtOffset);
-        //attempt to make buddy face where he shoots using LookAt.
-        Vector3 budToLookAtPos = transform.position - budLookAt.position;
-        angleFromPlayer = Mathf.Atan2(budToLookAtPos.y, budToLookAtPos.x) * Mathf.Rad2Deg;
-    }
-
-    void calcAngleFromPlayer()
-    {
-        Vector3 playerToBudPos = playerPos.position - transform.position;
-        angleFromPlayer = Mathf.Atan2(playerToBudPos.y, playerToBudPos.x) * Mathf.Rad2Deg;
+        transform.rotation = Quaternion.Euler(0, 0, budAngle);
     }
 
     void DropBomb(Vector3 bombSpawn, float angle)
