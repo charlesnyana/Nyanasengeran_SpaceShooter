@@ -49,7 +49,8 @@ public class Buddy : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             bombSpawn = transform.position + (transform.up * bombOffset);
-            DropBomb(bombSpawn, angleFromPlayer);
+            float bombAngle = calcAngleFromVectors(bombSpawn, playerPos.position);
+            DropBomb(bombSpawn, bombAngle);
         }
     }
 
